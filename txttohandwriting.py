@@ -4,8 +4,8 @@ from PIL import Image
 import os
 BG = Image.open("myfont/bg.png")
 sizeOfSheet = BG.width
-gap, _ = 0, 0
-allowedChars = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM,.-?!() 1234567890'
+pages,gap, _ = 0, 100, 250
+allowedChars = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM,.-?!() 1234567890:'
 
 
 def writee(char):
@@ -23,9 +23,14 @@ def writee(char):
 
 def letterwrite(word):
     global gap, _
-    if gap > sizeOfSheet - 95 * (len(word)):
-        gap = 0
-        _ += 200
+    if word == '*':
+        gap = 100
+        _ += 220
+        writee('space')
+    if gap > sizeOfSheet - 98 * (len(word)):
+        gap = 100
+        _ += 170
+        writee('space')
     for letter in word:
         if letter in allowedChars:
             if letter.islower():
@@ -47,42 +52,58 @@ def letterwrite(word):
                 letter = 'braketcl'
             elif letter == '-':
                 letter = 'hiphen'
+            elif letter == ':':
+                letter = 'colon'
             writee(letter)
 
 
 def worddd(Input):
     wordlist = Input.split(' ')
     for i in wordlist:
-        letterwrite(i)
-        writee('space')
-
-
+        if '*' in i:
+            letterwrite(i)
+        else:
+            letterwrite(i)
+            writee('space')
+            
 if __name__ == '__main__':
     try:
         with open('boom.txt', 'r') as file:
-            data = file.read().replace('\n', '')
+            data = file.read().replace('\n',' * \n')
 
         with open('final_output.pdf', 'w') as file:
             pass
 
-        l = len(data)
-        nn = len(data) // 600
-        chunks, chunk_size = len(data), len(data) // (nn + 1)
-        p = [data[i:i + chunk_size] for i in range(0, chunks, chunk_size)]
-
-        for i in range(0, len(p)):
+        data = data.strip()
+        data = data.split(" ")
+        p = data
+        writee('space')
+        for i in range(0, len(p)-1):
             worddd(p[i])
-            writee('\n')
-            BG.save('%doutt.png' % i)
+            if _< 2800:
+                continue
+            pages += 1
+            BG.save('%doutt.png' % pages)
             BG1 = Image.open("myfont/bg.png")
             BG = BG1
-            gap = 0
-            _ = 0
+            gap = 100
+            _ = 250
+            writee('space')
+            print(pages)
+        if _ > 0 or gap > 0:
+            pages += 1
+            BG.save('%doutt.png' % pages)
+            BG1 = Image.open("myfont/bg.png")
+            BG = BG1
+            gap = 100
+            _ = 250
+            writee('space')
+            print(pages)
     except ValueError as E:
         print("{}\nTry again".format(E))
 
 imagelist = []
-for i in range(0, len(p)):
+for i in range(1, pages+1):
     imagelist.append('%doutt.png' % i)
 
 #Converting images to pdf
